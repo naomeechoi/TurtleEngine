@@ -118,10 +118,29 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>if not exist "$(TargetDir)Assets" mkdir "$(TargetDir)Assets"</Command>
+      <Command>:: 1. 폴더 생성 (TargetDir의 한 단계 상위에 생성)
+if not exist "$(TargetDir)..\Assets" mkdir "$(TargetDir)..\Assets"
+if not exist "$(TargetDir)..\Settings" mkdir "$(TargetDir)..\Settings"
+
+:: 2. 파일 복사 (복사 대상 경로도 ..\ 추가)
+xcopy "$(SolutionDir)Assets\*" "$(TargetDir)..\Assets\" /S /Y /D /I /EXCLUDE:"$(ProjectDir)exclude.txt"
+xcopy "$(SolutionDir)Settings\*" "$(TargetDir)..\Settings\" /S /Y /D /I</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>if not exist "$(SolutionDir)CompiledShader" mkdir "$(SolutionDir)CompiledShader"</Command>
+      <Command>:: 1. 원본 셰이더가 생성될 폴더가 없으면 미리 생성 (에러 방지)
+if not exist "$(TargetDir)..\CompiledShader" mkdir "$(TargetDir)..\CompiledShader"
+
+:: 2. 복사된 셰이더를 보관할 솔루션 루트 폴더 생성
+if not exist "$(SolutionDir)CompiledShader" mkdir "$(SolutionDir)CompiledShader"
+
+:: 3. 셰이더 파일 복사 (파일이 있을 때만 실행하여 에러 코드 4 방지)
+if exist "$(TargetDir)..\CompiledShader\*.cso" (
+    xcopy "$(TargetDir)..\CompiledShader\*.cso" "$(SolutionDir)CompiledShader\" /D /Y /I /E
+)
+
+:: 4. 에셋 및 설정 파일 복사
+xcopy "$(SolutionDir)Assets\*" "$(TargetDir)Assets\" /S /Y /D /I /EXCLUDE:"$(ProjectDir)exclude.txt"
+xcopy "$(SolutionDir)Settings\*" "$(TargetDir)Settings\" /S /Y /D /I</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

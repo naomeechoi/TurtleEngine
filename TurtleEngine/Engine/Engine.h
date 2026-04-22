@@ -19,6 +19,11 @@ public:
 	Engine(const Engine&) = delete;
 	Engine& operator=(const Engine&) = delete;
 
+	void BeginScene();
+
+private:
+	void UpdateViewport(uint32 width, uint32 height);
+
 private:
 	static Engine* instance;
 	class Window* window = nullptr;
@@ -30,4 +35,5 @@ private:
 	ID3D11DeviceContext* deviceContext = nullptr;
 	IDXGISwapChain* swapChain = nullptr;
 	ID3D11RenderTargetView* renderTargetView = nullptr;
+	D3D11_VIEWPORT viewport;
 };

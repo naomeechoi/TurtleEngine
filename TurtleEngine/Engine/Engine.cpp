@@ -41,6 +41,24 @@ void Engine::Initialize(const wchar_t* name, uint32 width, uint32 height)
 			nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flag, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION, &device, nullptr, &deviceContext),
 		TEXT("Failed to create device.")
 	);
+
+	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+	swapChainDesc.BufferCount = 1;
+	swapChainDesc.BufferDesc.Width = width;
+	swapChainDesc.BufferDesc.Height = height;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.OutputWindow = window->Handle();
+	swapChainDesc.Windowed = true;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
+	
+	IDXGIDevice* dxgiDevice = nullptr;
+	ThrowIfFailed(
+		device->QueryInterface()
+		,TEXT("Failed to create device.")
+	);
 }
 
 void Engine::Run()

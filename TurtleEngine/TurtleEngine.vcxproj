@@ -161,18 +161,22 @@ xcopy "$(SolutionDir)Settings\*" "$(TargetDir)Settings\" /S /Y /D /I</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\AssetManager.cpp" />
     <ClCompile Include="Core\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Core\Window.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Render\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\AssetManager.h" />
     <ClInclude Include="Core\CommonDefine.h" />
     <ClInclude Include="Core\PrecompiledHeader.h" />
     <ClInclude Include="Core\Window.h" />
     <ClInclude Include="Engine\Engine.h" />
+    <ClInclude Include="Render\Mesh.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

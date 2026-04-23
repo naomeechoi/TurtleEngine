@@ -7,6 +7,27 @@ Engine* Engine::instance = nullptr;
 Engine::~Engine()
 {
 	SafeDelete(window);
+	SafeRelease(swapChain);
+	SafeRelease(renderTargetView);
+	SafeRelease(device);
+	SafeRelease(deviceContext);
+}
+
+void Engine::BeginScene()
+{
+	float clearColor[4] = { 0.2f, 0.3f, 0.1f, 1.0f };
+	deviceContext->ClearRenderTargetView(renderTargetView, clearColor);
+}
+
+void Engine::UpdateViewport(uint32 width, uint32 height)
+{
+	viewport = {};
+	viewport.Width = static_cast<float>(width);
+	viewport.Height = static_cast<float>(height);
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 }
 
 Engine* Engine::GetInstance()
@@ -43,7 +64,7 @@ void Engine::Initialize(const wchar_t* name, uint32 width, uint32 height)
 	);
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-	swapChainDesc.BufferCount = 1;
+	swapChainDesc.BufferCount = 2;
 	swapChainDesc.BufferDesc.Width = width;
 	swapChainDesc.BufferDesc.Height = height;
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -56,9 +77,42 @@ void Engine::Initialize(const wchar_t* name, uint32 width, uint32 height)
 	
 	IDXGIDevice* dxgiDevice = nullptr;
 	ThrowIfFailed(
-		device->QueryInterface()
-		,TEXT("Failed to create device.")
+		device->QueryInterface(IID_PPV_ARGS(&dxgiDevice))
+		,TEXT("Failed to create dxgiDevice."));
+
+	IDXGIAdapter* dxgiAdapter = nullptr;
+	ThrowIfFailed(
+		dxgiDevice->GetParent(IID_PPV_ARGS(&dxgiAdapter))
+		, TEXT("Failed to create dxgiAdapter."));
+
+	IDXGIFactory* dxgiFactory = nullptr;
+	ThrowIfFailed(
+		dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory))
+		, TEXT("Failed to create dxgiFactory.")
 	);
+
+	ThrowIfFailed(
+		dxgiFactory->CreateSwapChain(device, &swapChainDesc, &swapChain),
+		TEXT("Failed to create swap chain.")
+	);
+
+	SafeRelease(dxgiDevice);
+	SafeRelease(dxgiAdapter);
+	SafeRelease(dxgiFactory);
+
+	ID3D11Texture2D* backBuffer = nullptr;
+	ThrowIfFailed(
+		swapChain->GetBuffer(0u, IID_PPV_ARGS(&backBuffer)),
+		TEXT("Failed to create swapChain."));
+
+	ThrowIfFailed(
+		device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView),
+		TEXT("Failed to create renderTargetView."));
+
+	SafeRelease(backBuffer);
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, nullptr);
+
+	UpdateViewport(width, height);
 }
 
 void Engine::Run()
@@ -73,7 +127,8 @@ void Engine::Run()
 		}
 		else
 		{
-
+			BeginScene();
+			swapChain->Present(1, 0);
 		}
 	}
 }

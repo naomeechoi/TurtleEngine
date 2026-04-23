@@ -55,3 +55,13 @@ void SafeDeleteArray(Type*& pointer)
 		pointer = nullptr;
 	}
 }
+
+template<typename Type>
+void SafeRelease(Type*& pointer)
+{
+	if (pointer != nullptr)
+	{
+		pointer->Release();
+		pointer = nullptr;
+	}
+}

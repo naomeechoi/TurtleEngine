@@ -9,6 +9,9 @@
 #include <algorithm>
 #include <unordered_map>
 #include <fstream>
+#include <type_traits>
+#include <cmath>
+
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -73,5 +76,13 @@ std::string FormatString(const char* format, Type&&... args)
 {
 	char buffer[256];
 	sprintf_s(buffer, sizeof(buffer), format, args ...);
+	return buffer;
+}
+
+template<typename... Type>
+std::wstring FormatWideString(const wchar_t* format, Type&&... args)
+{
+	wchar_t buffer[256];
+	std::swprintf(buffer, 256, format, args ...);
 	return buffer;
 }

@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
+#include <fstream>
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -64,4 +66,12 @@ void SafeRelease(Type*& pointer)
 		pointer->Release();
 		pointer = nullptr;
 	}
+}
+
+template<typename... Type>
+std::string FormatString(const char* format, Type&&... args)
+{
+	char buffer[256];
+	sprintf_s(buffer, sizeof(buffer), format, args ...);
+	return buffer;
 }

@@ -9,11 +9,11 @@ struct MeshData
 	void Serialize(const char* fileName);
 	void Deserialize(const char* fileName);
 
-	void* vertexBufferData = nullptr;
+	std::vector<char> vertexBufferData;
 	uint32 vertexStride = 0u;
 	uint32 vertexCount = 0u;
 
-	void* indexBufferData = nullptr;
+	std::vector<uint32> indexBufferData;
 	uint32 indexCount = 0u;
 };
 

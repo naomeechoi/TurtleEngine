@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <unordered_map>
 #include <fstream>
+//#include <sstream>
+#include <iterator>
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -75,3 +77,5 @@ std::string FormatString(const char* format, Type&&... args)
 	sprintf_s(buffer, sizeof(buffer), format, args ...);
 	return buffer;
 }
+
+bool ReadAllText(const std::string& path, std::string& outText);

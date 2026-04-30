@@ -1,6 +1,9 @@
 #include <PrecompiledHeader.h>
 #include "AssetManager.h"
 #include "../Render/Mesh.h"
+#include "../Math/Vector2.h"
+#include "../Math/Vector3.h"
+#include "../Math/Color.h"
 
 AssetManager* AssetManager::instance = nullptr;
 
@@ -36,4 +39,10 @@ AssetManager& AssetManager::Get()
 
 void AssetManager::LoadMeshFile(const char* filePath, MeshData** outMesh)
 {
+	std::ifstream file(filePath);
+	if (!file.is_open())
+	{
+		//TODO ERROR LOG
+		return;
+	}
 }

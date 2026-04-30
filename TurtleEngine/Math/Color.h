@@ -16,24 +16,19 @@ public:
 
     // Variadic template constructor (Accepts only float-compatible types)
     // Allows flexible initialization like Color(1.0f, 0.5f)
-    template <typename... Args,
-        typename = std::enable_if_t<(std::is_convertible_v<Args, float> && ...)>>
-    Color(Args... args) : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {
+    template <typename... Args>
+        requires (sizeof...(Args) > 0 && (std::is_convertible_v<Args, float> && ...))
+    Color(Args... args) : red(0.0f), green(0.0f), blue(0.0f), alpha(1.0f) {
         float values[] = { static_cast<float>(args)... };
-        int count = sizeof...(Args) > 4 ? 4 : sizeof...(Args);
-        for (int i = 0; i < count; i++)
-            gba[i] = values[i];
+        int count = (sizeof...(Args) > 4) ? 4 : (int)sizeof...(Args);
+
+        for (int i = 0; i < count; i++) {
+            rgba[i] = values[i]; // gba가 아니라 멤버 변수 이름인 rgba 확인!
+        }
     }
 
     Color(const Color& other) noexcept {
         for (int i = 0; i < 4; ++i) rgba[i] = other.rgba[i];
-    }
-
-    Color& operator=(const Color& other) noexcept {
-        if (this != &other) {
-            for (int i = 0; i < 4; ++i) rgba[i] = other.rgba[i];
-        }
-        return *this;
     }
 
     static const Color White;

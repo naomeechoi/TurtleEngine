@@ -173,6 +173,7 @@ xcopy "$(SolutionDir)Settings\*" "$(TargetDir)Settings\" /S /Y /D /I</Command>
     <ClCompile Include="Math\Vector2.cpp" />
     <ClCompile Include="Math\Vector3.cpp" />
     <ClCompile Include="Render\Mesh.cpp" />
+    <ClCompile Include="Render\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\AssetManager.h" />
@@ -184,6 +185,7 @@ xcopy "$(SolutionDir)Settings\*" "$(TargetDir)Settings\" /S /Y /D /I</Command>
     <ClInclude Include="Math\Vector2.h" />
     <ClInclude Include="Math\Vector3.h" />
     <ClInclude Include="Render\Mesh.h" />
+    <ClInclude Include="Render\Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

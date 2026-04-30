@@ -4,6 +4,7 @@
 #include "../Math/Vector2.h"
 #include "../Math/Vector3.h"
 #include "../Math/Color.h"
+#include "../Render/Vertex.h"
 
 AssetManager* AssetManager::instance = nullptr;
 
@@ -39,10 +40,19 @@ AssetManager& AssetManager::Get()
 
 void AssetManager::LoadMeshFile(const char* filePath, MeshData** outMesh)
 {
-	std::ifstream file(filePath);
-	if (!file.is_open())
+	std::string fullText;
+	if (!ReadAllText(filePath, fullText))
 	{
 		//TODO ERROR LOG
 		return;
 	}
+
+	std::stringstream fileStream(fullText);
+	std::string line;
+
+	std::vector<Vector3> positions;
+	std::vector<Vector2> uvs;
+	std::vector<Vector3> normals;
+	std::vector<Vertex> vertices;
+
 }

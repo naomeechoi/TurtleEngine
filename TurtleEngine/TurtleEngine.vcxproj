@@ -170,6 +170,8 @@ xcopy "$(SolutionDir)Settings\*" "$(TargetDir)Settings\" /S /Y /D /I</Command>
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Math\Color.cpp" />
+    <ClCompile Include="Math\Matrix4.cpp" />
+    <ClCompile Include="Math\Transform.cpp" />
     <ClCompile Include="Math\Vector2.cpp" />
     <ClCompile Include="Math\Vector3.cpp" />
     <ClCompile Include="Render\Mesh.cpp" />
@@ -183,6 +185,9 @@ xcopy "$(SolutionDir)Settings\*" "$(TargetDir)Settings\" /S /Y /D /I</Command>
     <ClInclude Include="Core\Window.h" />
     <ClInclude Include="Engine\Engine.h" />
     <ClInclude Include="Math\Color.h" />
+    <ClInclude Include="Math\MathDefine.h" />
+    <ClInclude Include="Math\Matrix4.h" />
+    <ClInclude Include="Math\Transform.h" />
     <ClInclude Include="Math\Vector2.h" />
     <ClInclude Include="Math\Vector3.h" />
     <ClInclude Include="Render\Mesh.h" />

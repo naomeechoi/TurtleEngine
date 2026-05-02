@@ -4,16 +4,25 @@
 struct MeshData
 {
 	MeshData() = default;
+	MeshData(void* vertexBufferData, uint32 vertexStride, uint32 vertexCount, void* indexBufferData, uint32 indexCount)
+		: vertexStride(vertexStride), vertexCount(vertexCount), indexCount(indexCount)
+	{
+		this->vertexBufferData = new char[vertexStride * vertexCount];
+		memcpy(this->vertexBufferData, vertexBufferData, vertexStride * vertexCount);
+
+		this->indexBufferData = new uint32[indexCount];
+		memcpy(this->indexBufferData, indexBufferData, sizeof(uint32) * indexCount);
+	}
 	~MeshData();
 
 	void Serialize(const char* fileName);
 	void Deserialize(const char* fileName);
 
-	std::vector<char> vertexBufferData;
+	void* vertexBufferData = nullptr;
 	uint32 vertexStride = 0u;
 	uint32 vertexCount = 0u;
 
-	std::vector<uint32> indexBufferData;
+	void* indexBufferData = nullptr;
 	uint32 indexCount = 0u;
 };
 
@@ -29,6 +38,7 @@ public:
 		void* indexBufferData,
 		uint32 indexCount);
 	Mesh(MeshData* meshData);
+	virtual ~Mesh();
 
 	virtual void Draw();
 	void UpdateMeshData(MeshData* data);
@@ -40,6 +50,6 @@ protected:
 	struct ID3D11Buffer* indexBuffer = nullptr;
 
 	struct ID3D11Device* refDevice = nullptr;
-	struct ID3D11DeviceContext* refContext = nullptr;
+	struct ID3D11DeviceContext* refDeviceContext = nullptr;
 };
 

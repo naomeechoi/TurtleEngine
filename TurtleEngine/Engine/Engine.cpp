@@ -6,6 +6,7 @@ Engine* Engine::instance = nullptr;
 
 Engine::~Engine()
 {
+	instance = nullptr;
 	SafeDelete(window);
 	SafeRelease(swapChain);
 	SafeRelease(renderTargetView);
@@ -139,7 +140,8 @@ LRESULT Engine::MessageProcedure(HWND handle, UINT message, WPARAM wparam, LPARA
 	{
 	case WM_DESTROY:
 	{
-
+		PostQuitMessage(0); // 이걸 호출해야 Run()의 WM_QUIT이 작동합니다.
+		return 0;
 	}
 	break;
 	case WM_SIZE:

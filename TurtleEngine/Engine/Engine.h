@@ -21,6 +21,9 @@ public:
 
 	void BeginScene();
 
+	ID3D11Device* Device() const { return device; }
+	ID3D11DeviceContext* Context() const { return deviceContext; }
+
 private:
 	void UpdateViewport(uint32 width, uint32 height);
 
@@ -35,5 +38,7 @@ private:
 	ID3D11DeviceContext* deviceContext = nullptr;
 	IDXGISwapChain* swapChain = nullptr;
 	ID3D11RenderTargetView* renderTargetView = nullptr;
-	D3D11_VIEWPORT viewport;
+	D3D11_VIEWPORT viewport = {};
 };
+
+extern Engine* gEngine;

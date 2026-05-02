@@ -1,6 +1,8 @@
 #include "PrecompiledHeader.h"
 #include "Engine/Engine.h"
 
+Engine* gEngine;
+
 int main()
 {
 	Engine* engine = Engine::GetInstance();

@@ -28,13 +28,23 @@
 	MessageBox(nullptr, buffer, L"Error", MB_OK);													\
 
 
-#define ThrowIfFailed(result, message)						\
-	if (FAILED(result))										\
-	{														\
-		_com_error error(result);							\
-		ShowErrorMessage(message, error.ErrorMessage());	\
-		__debugbreak();										\
-	}														\
+#define ThrowIfFailed(result, message)							\
+	if (FAILED(result))											\
+	{															\
+		_com_error erorr(result);								\
+		ShowErrorMessage(message, erorr.ErrorMessage());		\
+		__debugbreak();											\
+	}
+
+#define ThrowWithMessage(message)		\
+	ThrowIfFailed(E_FAIL, message);
+
+__forceinline void CopyString(char** destination, const char* source)
+{
+	size_t length = strlen(source);
+	*destination = new char[length + 1];
+	strcpy_s(*destination, length + 1, source);
+}
 
 __forceinline void CopyWideString(wchar_t** destination, const wchar_t* source)
 {
@@ -85,6 +95,14 @@ template<typename... Type>
 std::wstring FormatWideString(const wchar_t* format, Type&&... args)
 {
 	wchar_t buffer[256];
+	std::swprintf(buffer, 256, format, args ...);
+	return buffer;
+}
+
+template<typename... Type>
+const wchar_t* FormatWideStringW(const wchar_t* format, Type&&... args)
+{
+	wchar_t* buffer = new wchar_t[256];
 	std::swprintf(buffer, 256, format, args ...);
 	return buffer;
 }

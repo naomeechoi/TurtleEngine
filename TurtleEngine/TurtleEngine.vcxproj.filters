@@ -60,6 +60,12 @@
     <ClCompile Include="Math\Quaternion.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Shader\DefaultShader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Texture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Engine.h">
@@ -105,6 +111,15 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Math\Quaternion.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader\DefaultShader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Texture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\stb_image.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

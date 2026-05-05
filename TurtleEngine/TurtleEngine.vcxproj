@@ -177,7 +177,9 @@ xcopy "$(SolutionDir)Settings\*" "$(TargetDir)Settings\" /S /Y /D /I</Command>
     <ClCompile Include="Math\Vector3.cpp" />
     <ClCompile Include="Render\Mesh.cpp" />
     <ClCompile Include="Render\SphereMesh.cpp" />
+    <ClCompile Include="Render\Texture.cpp" />
     <ClCompile Include="Render\Vertex.cpp" />
+    <ClCompile Include="Shader\DefaultShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\AssetManager.h" />
@@ -185,6 +187,7 @@ xcopy "$(SolutionDir)Settings\*" "$(TargetDir)Settings\" /S /Y /D /I</Command>
     <ClInclude Include="Core\PrecompiledHeader.h" />
     <ClInclude Include="Core\Window.h" />
     <ClInclude Include="Engine\Engine.h" />
+    <ClInclude Include="Library\stb_image.h" />
     <ClInclude Include="Math\Color.h" />
     <ClInclude Include="Math\MathDefine.h" />
     <ClInclude Include="Math\Matrix4.h" />
@@ -194,7 +197,9 @@ xcopy "$(SolutionDir)Settings\*" "$(TargetDir)Settings\" /S /Y /D /I</Command>
     <ClInclude Include="Math\Vector3.h" />
     <ClInclude Include="Render\Mesh.h" />
     <ClInclude Include="Render\SphereMesh.h" />
+    <ClInclude Include="Render\Texture.h" />
     <ClInclude Include="Render\Vertex.h" />
+    <ClInclude Include="Shader\DefaultShader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

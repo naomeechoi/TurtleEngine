@@ -5,6 +5,10 @@
 #include "../Math/Vector3.h"
 #include "../Math/Color.h"
 #include "../Render/Vertex.h"
+#include "../Engine/Engine.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "../Library/stb_image.h"
 
 AssetManager* AssetManager::instance = nullptr;
 
@@ -31,6 +35,70 @@ void AssetManager::LoadMesh(const char* filepath, MeshData** outData)
 	meshes.insert(std::make_pair(filepath, newMeshData));
 
 	*outData = newMeshData;
+}
+
+void AssetManager::LoadTexture(const char* filepath, TextureData** outData)
+{
+	auto search = textures.find(filepath);
+	if (search != textures.end())
+	{
+		*outData = search->second;
+		return;
+	}
+
+	TextureData* newData = new TextureData();
+
+	// Load a texture file.
+	newData->data = stbi_load(filepath, &newData->width, &newData->height, &newData->channelCount, 0);
+	if (newData->data == nullptr)
+	{
+		ThrowWithMessage(TEXT("Failed to load a texture file"));
+		return;
+	}
+
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.Width = newData->width;
+	textureDesc.Height = newData->height;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.ArraySize = 1;
+	textureDesc.MipLevels = 1;
+
+	D3D11_SUBRESOURCE_DATA textureSubresourceData = {};
+	textureSubresourceData.pSysMem = newData->data;
+	textureSubresourceData.SysMemPitch = newData->width * newData->channelCount;
+
+	ID3D11Texture2D* texture = nullptr;
+	ThrowIfFailed(
+		gEngine->Device()->CreateTexture2D(&textureDesc, &textureSubresourceData, &texture),
+		TEXT("Failed to create texture2d."));
+
+	ThrowIfFailed(
+		gEngine->Device()->CreateShaderResourceView(texture, nullptr, &newData->shaderResourceView),
+		TEXT("Failed to create shader resource view"));
+
+	SafeRelease(texture);
+
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.MinLOD = -FLT_MIN;
+	samplerDesc.MaxLOD = FLT_MAX;
+	samplerDesc.MaxAnisotropy = 3u;
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+
+	ThrowIfFailed(
+		gEngine->Device()->CreateSamplerState(&samplerDesc, &newData->samplerState),
+		TEXT("Failed to create sampler state"));
+
+	textures.insert(std::make_pair(filepath, newData));
+	*outData = newData;
+
+	newData = nullptr;
 }
 
 AssetManager& AssetManager::Get()

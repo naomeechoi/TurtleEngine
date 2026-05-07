@@ -38,7 +38,7 @@ public:
 	Vector3 Cross(const Vector3& other) const;
 
 	// TODO: Quaternion
-	//Quaternion ToQuaternion();
+	Quaternion ToQuaternion();
 
 	bool Equal(const Vector3& other) const;
 

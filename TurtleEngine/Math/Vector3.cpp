@@ -1,5 +1,7 @@
 #include "PrecompiledHeader.h"
 #include "Vector3.h"
+#include "Quaternion.h"
+#include "MathDefine.h"
 
 const Vector3 Vector3::Zero = { 0.0f, 0.0f, 0.0f };
 const Vector3 Vector3::One = { 1.0f, 1.0f, 1.0f };
@@ -48,6 +50,25 @@ Vector3 Vector3::Cross(const Vector3& other) const
 	);
 }
 
+Quaternion Vector3::ToQuaternion()
+{
+	float cosX = (std::cosf(x * Math::Deg2Rad * 0.5f));
+	float sinX = (std::sinf(x * Math::Deg2Rad * 0.5f));
+
+	float cosY = (std::cosf(y * Math::Deg2Rad * 0.5f));
+	float sinY = (std::sinf(y * Math::Deg2Rad * 0.5f));
+
+	float cosZ = (std::cosf(z * Math::Deg2Rad * 0.5f));
+	float sinZ = (std::sinf(z * Math::Deg2Rad * 0.5f));
+
+	Quaternion result;
+	Quaternion quaternionX(sinX, 0.0f, 0.0f, cosX);
+	Quaternion quaternionY(0.0f, sinY, 0.0f, cosY);
+	Quaternion quaternionZ(0.0f, 0.0f, sinZ, cosZ);
+
+	result = (quaternionX * quaternionY) * quaternionZ;
+	return result;
+}
 
 bool Vector3::Equal(const Vector3& other) const
 {

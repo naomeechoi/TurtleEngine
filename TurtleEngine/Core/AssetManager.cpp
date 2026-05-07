@@ -1,11 +1,14 @@
 #include "PrecompiledHeader.h"
 #include "AssetManager.h"
+#include "../Engine/Engine.h"
+
 #include "../Render/Mesh.h"
+#include "../Render/Vertex.h"
+#include "../Shader/DefaultShader.h"
+
 #include "../Math/Vector2.h"
 #include "../Math/Vector3.h"
 #include "../Math/Color.h"
-#include "../Render/Vertex.h"
-#include "../Engine/Engine.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../Library/stb_image.h"
@@ -20,26 +23,59 @@ void AssetManager::Release()
 	SafeDelete(instance);
 }
 
-void AssetManager::LoadMesh(const char* filepath, MeshData** outData)
+void AssetManager::LoadMesh(const char* filePath, MeshData** outData)
 {
-	auto search = meshes.find(filepath);
+	auto search = meshes.find(filePath);
 	if (search != meshes.end())
 	{
 		*outData = search->second;
 		return;
 	}
 
-	std::string metaFilePath = FormatString("%s.meta", filepath);
+	std::string metaFilePath = FormatString("%s.meta", filePath);
 	MeshData* newMeshData = new MeshData();
 	newMeshData->Deserialize(metaFilePath.c_str());
-	meshes.insert(std::make_pair(filepath, newMeshData));
+	meshes.insert(std::make_pair(filePath, newMeshData));
 
 	*outData = newMeshData;
 }
 
-void AssetManager::LoadTexture(const char* filepath, TextureData** outData)
+void AssetManager::LoadShader(const char* materialName, const wchar_t* shaderName, const char* texturePath, DefaultShader** outShader)
 {
-	auto search = textures.find(filepath);
+	auto search = shaders.find(materialName);
+	if (search != shaders.end())
+	{
+		*outShader = search->second;
+		return;
+	}
+
+	DefaultShader* newShader = new DefaultShader(shaderName, texturePath);
+	if (newShader == nullptr)
+	{
+		// TODO LOG
+		__debugbreak();
+		return;
+	}
+
+	shaders.insert(std::make_pair(materialName, newShader));
+	*outShader = newShader;
+}
+
+void AssetManager::LoadMaterial(const char* materialName, Material* outMaterial, DefaultShader** outShader)
+{
+	LoadMaterialFile(materialName, outMaterial);
+	size_t convertedChars = 0;
+	size_t newSize = strlen(outMaterial->shaderName) + 1;
+	wchar_t* shaderName = new wchar_t[newSize];
+	mbstowcs_s(&convertedChars, shaderName, newSize, outMaterial->shaderName, _TRUNCATE);
+	LoadShader(materialName, shaderName, outMaterial->texturePath, outShader);
+
+	SafeDeleteArray(shaderName);
+}
+
+void AssetManager::LoadTexture(const char* filePath, TextureData** outData)
+{
+	auto search = textures.find(filePath);
 	if (search != textures.end())
 	{
 		*outData = search->second;
@@ -49,7 +85,7 @@ void AssetManager::LoadTexture(const char* filepath, TextureData** outData)
 	TextureData* newData = new TextureData();
 
 	// Load a texture file.
-	newData->data = stbi_load(filepath, &newData->width, &newData->height, &newData->channelCount, 0);
+	newData->data = stbi_load(filePath, &newData->width, &newData->height, &newData->channelCount, 0);
 	if (newData->data == nullptr)
 	{
 		ThrowWithMessage(TEXT("Failed to load a texture file"));
@@ -95,7 +131,7 @@ void AssetManager::LoadTexture(const char* filepath, TextureData** outData)
 		gEngine->Device()->CreateSamplerState(&samplerDesc, &newData->samplerState),
 		TEXT("Failed to create sampler state"));
 
-	textures.insert(std::make_pair(filepath, newData));
+	textures.insert(std::make_pair(filePath, newData));
 	*outData = newData;
 
 	newData = nullptr;
@@ -199,5 +235,67 @@ void AssetManager::LoadMeshFile(const char* filePath, MeshData** outMesh)
 		(*outMesh)->indexCount = static_cast<uint32>(indices.size());
 		(*outMesh)->indexBufferData = new uint32[indices.size()];
 		std::copy(indices.begin(), indices.end(), static_cast<uint32*>((*outMesh)->indexBufferData));
+	}
+}
+
+void AssetManager::LoadMaterialFile(const char* name, Material* outMaterial)
+{
+	std::string filePath = FormatString("%s/%s.txt", "../Assets/Materials/", name);
+	std::string fullText;
+	if (!ReadAllText(filePath, fullText))
+	{
+		//TODO ERROR LOG
+		return;
+	}
+
+	std::stringstream fileStream(fullText);
+	std::string line;
+
+	while (std::getline(fileStream, line))
+	{
+		if (line.empty())
+			continue;
+
+		std::stringstream lineStream(line);
+		std::string type;
+		lineStream >> type;
+
+		if (type == "color")
+		{
+			char junk; // to remove symbols
+			Color& color = outMaterial->color;
+			lineStream >> junk; // ignore '='
+			lineStream >> junk; // ignore '('
+			lineStream >> color.red >> junk;   // ignore ','
+			lineStream >> color.green >> junk; // ignore ','
+			lineStream >> color.blue >> junk;  // ignore ','
+			lineStream >> color.alpha;
+		}
+		else if (type == "texture")
+		{
+			std::string dummy;
+			lineStream >> dummy; // to ignore '=' 
+
+			if (outMaterial->texturePath)
+				SafeDeleteArray(outMaterial->texturePath);
+
+			outMaterial->texturePath = new char[MAX_PATH];
+
+			lineStream >> std::ws;
+			lineStream.getline(outMaterial->texturePath, MAX_PATH);
+		}
+		else if (type == "shader")
+		{
+			std::string dummy;
+			lineStream >> dummy; // to ignore '=' 
+
+			if (outMaterial->shaderName)
+				SafeDeleteArray(outMaterial->shaderName);
+
+			outMaterial->shaderName = new char[MAX_PATH];
+
+			lineStream >> std::ws;
+			lineStream.getline(outMaterial->shaderName, MAX_PATH);
+		}
 	}
 }
